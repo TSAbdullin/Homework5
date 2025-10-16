@@ -1,6 +1,5 @@
 ﻿using AnotherTasks.Classes;
 using AnotherTasks.Enums;
-using System.Xml.Linq;
 
 class Start
 {
@@ -29,11 +28,80 @@ class Start
             throw new FileNotFoundException("Файл Students не найден!");
         }
 
-        Dictionary<Guid, StudentPM> students = CreateStudents(filePath);        
+        Dictionary<Guid, StudentPM> students = CreateStudents(filePath);
 
         foreach (var student in students)
         {
             Console.WriteLine($"Индентификатор({student.Key}): {student.Value.FirstName}, {student.Value.LastName}, {student.Value.Birthday}, {OutputSubject(student.Value.ExamsForPM)}, {student.Value.Scores}");
+        }
+        //////////////////////////////
+
+        //////////////////////////////
+        Console.WriteLine("\nЗадание 4. Написать метод для обхода графа в глубину или ширину - вывести на экран\r\nкратчайший путь.\n");
+        SearchTheShortestWay();
+        //////////////////////////////
+
+        //////////////////////////////
+        Console.WriteLine("\nЗадание 3. Создать бабулю. У бабули есть Имя, возраст, болезнь и лекарство от этой болезни,\r\nкоторое она принимает (болезней может быть у бабули несколько). Реализуйте список\r\nбабуль. Также есть больница (у больницы есть название, список болезней, которые\r\nони лечат и вместимость). Больниц также, как и бабуль несколько. Бабули по очереди\r\nпоступают (реализовать ввод с клавиатуры) и дальше идут в больницу, в зависимости от\r\nзаполненности больницы и списка болезней, которые лечатся в данной больнице,\r\nреализовать функционал, который будет распределять бабулю в нужную больницу. Если\r\nбабуля не имеет болезней, то она хочет только спросить - она может попасть в первую\r\nсвободную клинику. Если бабулю ни одна из больниц не лечит, то бабуля остаётся на\r\nулице плакать. На экран выводить список всех бабуль, список всех больниц,\r\nболезни, которые там лечат и сколько бабуль в данный момент находится в\r\nбольнице, также\r\nвывести процент заполненности больницы. P.S. Бабуля попадает в больницу, если\r\nтам лечат более 50% ее болезней. Больницы реализовать в виде стека, бабуль в виде\r\nочереди.\n");
+
+        Queue<Grandmother> grandmothers = new Queue<Grandmother>(); // создаём несколько бабуль
+
+        grandmothers.Enqueue(new Grandmother("Оля", new DateTime(1952, 3, 2), new List<string> { "астма", "пневмония" }, new List<string> { "ингалятор", "таблетки" }));
+
+        grandmothers.Enqueue(new Grandmother("Лаура", new DateTime(1962, 3, 21), new List<string> { "артрит" }, new List<string> { "мазь" }));
+
+        grandmothers.Enqueue(new Grandmother("Алина", new DateTime(1952, 3, 2), new List<string>(), new List<string>()));
+
+        grandmothers.Enqueue(new Grandmother("Софья", new DateTime(1952, 3, 2), new List<string> { "диабет", "диабет", "анемия" }, new List<string> { "инсулин", "таблетки" }));
+
+        // создаём бабуль, которые уже лежат в больницах
+        List<Grandmother> listGrandmothers1 = new List<Grandmother>
+        {
+            new Grandmother("Дарья", new DateTime(1952, 3, 14), new List<string> { "диабет" }, new List<string> { "инсулин" })
+        };
+
+        List<Grandmother> listGrandmothers2 = new List<Grandmother>(); // пустая
+
+        List<Grandmother> listGrandmothers3 = new List<Grandmother>(); // пустая
+
+
+        // создаём несколько больниц в виде стека
+        Stack<Hospital> hospitals = new Stack<Hospital>();
+
+        hospitals.Push(new Hospital("Городская поликлиника №20", 2, new List<string> { "гипертония", "диабет" }, listGrandmothers1));
+        hospitals.Push(new Hospital("Центральная больница №1", 3, new List<string> { "астма", "артрит", "грипп" }, listGrandmothers2));
+        hospitals.Push(new Hospital("Больница №14", 1, new List<string> { "простуда" }, listGrandmothers3));
+
+        Console.WriteLine("Распределение бабушек по больницвм");
+
+        // распределяем бабуль по больницам
+        while (grandmothers.Count > 0)
+        {
+            Grandmother grandmother = grandmothers.Dequeue();
+            bool placed = false;
+
+            foreach (Hospital hospital in hospitals)
+            {
+                if (hospital.TryAddGrandmother(grandmother))
+                {
+                    Console.WriteLine($"{grandmother.Name} попала в больницу {hospital.Name}");
+                    placed = true;
+                    break;
+                }
+            }
+
+            if (!placed)
+            {
+                grandmother.PlakiPlaki();
+            }
+        }
+
+        // выводим итоговую информацию
+        Console.WriteLine("\nИтоговая информация о больницах\n");
+
+        foreach (Hospital hospital in hospitals)
+        {
+            hospital.OutputInfo();
         }
         //////////////////////////////
     }
@@ -289,5 +357,67 @@ class Start
         {
             Console.WriteLine($"{student.LastName} {student.FirstName}: {student.Scores}");
         }
+    }
+
+    static void SearchTheShortestWay()
+    {
+        // Граф
+        Dictionary<string, List<string>> graph = new Dictionary<string, List<string>>
+        {
+            { "A", new List<string> { "B", "C" } },
+            { "B", new List<string> { "A", "D", "E" } },
+            { "C", new List<string> { "A", "F" } },
+            { "D", new List<string> { "B" } },
+            { "E", new List<string> { "B", "F" } },
+            { "F", new List<string> { "C", "E" } }
+        };
+
+        Console.Write("Введите начальную вершину: ");
+        string start = Console.ReadLine().ToUpper();
+
+        Console.Write("Введите конечную вершину: ");
+        string end = Console.ReadLine().ToUpper();
+
+        List<string> path = FindShortestPathBFS(graph, start, end);
+
+        if (path != null)
+        {
+            Console.WriteLine($"Кратчайший путь: {string.Join(" -> ", path)}");
+        }
+        else
+        {
+            Console.WriteLine("Путь не найден!");
+        }
+    }
+
+    static List<string> FindShortestPathBFS(Dictionary<string, List<string>> graph, string start, string end)
+    {
+        Queue<List<string>> queue = new Queue<List<string>>(); // очередь путей
+        List<string> visited = new List<string>(); // посещённые вершины
+
+        queue.Enqueue(new List<string> { start }); // начинаем с пути, где одна вершина — старт
+
+        while (queue.Count > 0)
+        {
+            List<string> path = queue.Dequeue();
+            string node = path[path.Count - 1]; // последняя вершина в пути
+
+            if (node == end)
+                return path; // путь найден
+
+            if (!visited.Contains(node))
+            {
+                visited.Add(node); // отмечаем вершину как посещённую
+
+                foreach (string neighbor in graph[node])
+                {
+                    List<string> newPath = new List<string>(path);
+                    newPath.Add(neighbor);
+                    queue.Enqueue(newPath);
+                }
+            }
+        }
+
+        return null; // если ничего не шанлось
     }
 }

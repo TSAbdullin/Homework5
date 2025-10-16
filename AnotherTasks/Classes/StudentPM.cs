@@ -1,5 +1,4 @@
-﻿
-using AnotherTasks.Enums;
+﻿using AnotherTasks.Enums;
 
 namespace AnotherTasks.Classes
 {
