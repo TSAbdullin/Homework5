@@ -54,8 +54,7 @@ class Start
 
         grandmothers.Enqueue(new Grandmother("Софья", new DateTime(1952, 3, 2), new List<string> { "диабет", "диабет", "анемия" }, new List<string> { "инсулин", "таблетки" }));
 
-        // создаём бабуль, которые уже лежат в больницах
-        List<Grandmother> listGrandmothers1 = new List<Grandmother>
+        List<Grandmother> listGrandmothers1 = new List<Grandmother> // создаём бабуль, которые уже лежат в больницах
         {
             new Grandmother("Дарья", new DateTime(1952, 3, 14), new List<string> { "диабет" }, new List<string> { "инсулин" })
         };
@@ -65,8 +64,7 @@ class Start
         List<Grandmother> listGrandmothers3 = new List<Grandmother>(); // пустая
 
 
-        // создаём несколько больниц в виде стека
-        Stack<Hospital> hospitals = new Stack<Hospital>();
+        Stack<Hospital> hospitals = new Stack<Hospital>(); // создаём несколько больниц в виде стека
 
         hospitals.Push(new Hospital("Городская поликлиника №20", 2, new List<string> { "гипертония", "диабет" }, listGrandmothers1));
         hospitals.Push(new Hospital("Центральная больница №1", 3, new List<string> { "астма", "артрит", "грипп" }, listGrandmothers2));
@@ -74,8 +72,8 @@ class Start
 
         Console.WriteLine("Распределение бабушек по больницвм");
 
-        // распределяем бабуль по больницам
-        while (grandmothers.Count > 0)
+       
+        while (grandmothers.Count > 0)  // распределяем бабуль по больницам
         {
             Grandmother grandmother = grandmothers.Dequeue();
             bool placed = false;
